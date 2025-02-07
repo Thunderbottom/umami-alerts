@@ -102,10 +102,10 @@ jobs:
       with:
         crate: cargo-nextest
 
-    - name: Install cargo-nextest
+    - name: Install cargo-hack
       uses: baptiste0928/cargo-install@v3
       with:
-        crate: cargo-nextest
+        crate: cargo-hack
     
     - uses: Swatinem/rust-cache@v2
       with:

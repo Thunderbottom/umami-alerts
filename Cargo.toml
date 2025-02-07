@@ -1,7 +1,16 @@
 [package]
 name = "umami-alerts"
 version = "0.1.0"
+authors = ["Chinmay D. Pai <chinmaydpai@gmail.com>"]
 edition = "2021"
+license = "MIT"
+description = "Daily reports generator for Umami Analytics"
+keywords = ["reports", "analytics", "email"]
+repository = "https://github.com/Thunderbottom/umami-alerts"
+homepage = "https://github.com/Thunderbottom/umami-alerts"
+readme = "README.md"
+include = ["src/**/*", "LICENSE*", "README.md"]
+publish = false
 
 [dependencies]
 tokio = { version = "1.43", features = ["full"] }
