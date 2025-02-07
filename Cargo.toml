@@ -1,0 +1,22 @@
+[package]
+name = "umami-alerts"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.43", features = ["full"] }
+reqwest = { version = "0.11.27", features = ["json", "rustls-tls"], default-features = false }
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.138"
+toml = "0.8.20"
+thiserror = "1.0.69"
+chrono = { version = "0.4.39", features = ["serde"] }
+chrono-tz = "0.8.6"
+handlebars = { version = "6.3.0", features = ["dir_source"] }
+lettre = { version = "0.11.12", features = ["tokio1-native-tls", "builder"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+futures = "0.3.31"
+url = "2.5.4"
+mockito = "1.6.1"
+clap = { version = "4.5.28", features = ["derive"] }
