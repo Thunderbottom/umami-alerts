@@ -144,7 +144,7 @@ impl ReportGenerator {
 
         Ok(ReportData {
             website_name: website.name.clone(),
-            date: time_range.start.format("%B %d, %Y").to_string(),
+            date: time_range.end.format("%B %d, %Y").to_string(),
             stats,
             bounce_rate,
             time_spent,
