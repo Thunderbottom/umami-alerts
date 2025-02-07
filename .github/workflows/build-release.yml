@@ -21,6 +21,8 @@ jobs:
     - uses: actions/checkout@master
     - name: Build and release
       uses: rust-build/rust-build.action@v1.4.5
+      with:
+        TOOLCHAIN_VERSION: stable
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         RUSTTARGET: ${{ matrix.target }}
