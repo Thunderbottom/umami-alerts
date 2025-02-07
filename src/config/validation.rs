@@ -1,8 +1,9 @@
 use super::models::Config;
-use crate::config::models::SmtpConfig;
 use crate::error::{AppError, Result};
-use crate::WebsiteConfig;
 use tracing::warn;
+
+#[cfg(test)]
+use {crate::config::models::SmtpConfig, crate::WebsiteConfig};
 
 pub fn validate_config(config: &Config) -> Result<()> {
     // Validate SMTP configuration

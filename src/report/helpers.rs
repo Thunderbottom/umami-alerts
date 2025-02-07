@@ -57,7 +57,7 @@ pub fn percentage(
     let total = h.param(1).and_then(|v| v.value().as_f64()).unwrap_or(1.0);
 
     let percentage = if total > 0.0 {
-        (value / total * 100.0).min(100.0).max(0.0)
+        (value / total * 100.0).clamp(0.0, 100.0)
     } else {
         0.0
     };

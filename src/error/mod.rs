@@ -10,12 +10,10 @@ pub enum AppError {
     Api(String),
     Template(String),
     Smtp(String),
-    TimeZone(chrono_tz::ParseError), // This holds the actual ParseError
     Json(serde_json::Error),
     Toml(toml::de::Error),
     Request(reqwest::Error),
     Email(String),
-    Validation(String),
     Handlebars(handlebars::RenderError),
     Url(url::ParseError),
     Task(String),
@@ -37,8 +35,6 @@ impl StdError for AppError {
             | Self::Template(_)
             | Self::Smtp(_)
             | Self::Email(_)
-            | Self::Validation(_)
-            | Self::TimeZone(_)
             | Self::Task(_) => None,
         }
     }
@@ -52,12 +48,10 @@ impl fmt::Display for AppError {
             Self::Api(msg) => write!(f, "API error: {}", msg),
             Self::Template(msg) => write!(f, "Template error: {}", msg),
             Self::Smtp(msg) => write!(f, "SMTP error: {}", msg),
-            Self::TimeZone(e) => write!(f, "Time zone error: {}", e),
             Self::Json(e) => write!(f, "JSON error: {}", e),
             Self::Toml(e) => write!(f, "TOML error: {}", e),
             Self::Request(e) => write!(f, "Request error: {}", e),
             Self::Email(msg) => write!(f, "Email error: {}", msg),
-            Self::Validation(msg) => write!(f, "Validation error: {}", msg),
             Self::Handlebars(e) => write!(f, "Handlebars error: {}", e),
             Self::Url(e) => write!(f, "URL parsing error: {}", e),
             Self::Task(msg) => write!(f, "Task error: {}", msg),
@@ -140,6 +134,7 @@ impl From<String> for AppError {
 
 // Helper methods for error classification
 impl AppError {
+    #[cfg_attr(not(test), allow(dead_code))]
     pub fn is_network_error(&self) -> bool {
         match self {
             Self::Request(e) => e.is_connect() || e.is_timeout(),
@@ -149,6 +144,7 @@ impl AppError {
         }
     }
 
+    #[cfg_attr(not(test), allow(dead_code))]
     pub fn is_auth_error(&self) -> bool {
         match self {
             Self::Api(msg) => msg.contains("unauthorized") || msg.contains("forbidden"),
@@ -157,6 +153,7 @@ impl AppError {
         }
     }
 
+    #[cfg_attr(not(test), allow(dead_code))]
     pub fn is_retryable(&self) -> bool {
         self.is_network_error()
             || match self {
@@ -167,6 +164,7 @@ impl AppError {
     }
 
     // Helper constructors
+    #[cfg_attr(not(test), allow(dead_code))]
     pub fn config<T: ToString>(msg: T) -> Self {
         Self::Config(msg.to_string())
     }
@@ -175,20 +173,8 @@ impl AppError {
         Self::Api(msg.to_string())
     }
 
-    pub fn email<T: ToString>(msg: T) -> Self {
-        Self::Email(msg.to_string())
-    }
-
-    pub fn validation<T: ToString>(msg: T) -> Self {
-        Self::Validation(msg.to_string())
-    }
-
     pub fn task<T: ToString>(msg: T) -> Self {
         Self::Task(msg.to_string())
-    }
-
-    pub fn from_string(msg: String) -> Self {
-        Self::Task(msg)
     }
 }
 

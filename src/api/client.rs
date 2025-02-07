@@ -32,7 +32,7 @@ impl UmamiClient {
 
         let response = self
             .client
-            .post(&format!("{}/api/auth/login", self.base_url))
+            .post(format!("{}/api/auth/login", self.base_url))
             .json(&serde_json::json!({
                 "username": username,
                 "password": password,
@@ -74,7 +74,7 @@ impl UmamiClient {
 
         let response = self
             .client
-            .get(&format!(
+            .get(format!(
                 "{}/api/websites/{}/stats",
                 self.base_url, website_id
             ))
@@ -107,7 +107,7 @@ impl UmamiClient {
 
         let response = self
             .client
-            .get(&format!(
+            .get(format!(
                 "{}/api/websites/{}/metrics",
                 self.base_url, website_id
             ))
@@ -124,13 +124,10 @@ impl UmamiClient {
 
         let mut metrics: Vec<Metric> = self.handle_response(response).await?;
 
-        match metric_type {
-            "country" => {
-                for metric in &mut metrics {
-                    metric.x = crate::config::get_country_name(&metric.x);
-                }
+        if metric_type == "country" {
+            for metric in &mut metrics {
+                metric.x = crate::config::get_country_name(&metric.x);
             }
-            _ => {}
         }
 
         Ok(metrics)
