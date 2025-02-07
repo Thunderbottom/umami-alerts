@@ -2,21 +2,6 @@
 
 name: Run Tests
 
-on:
-  workflow_call:
-    inputs:
-      apt_packages:
-        required: false
-        type: string
-      msrv:
-        required: false
-        type: string
-        default: "1.57.0"
-      secrets:
-        github-token:
-          required: false
-          default: ${{ secrets.GITHUB_TOKEN }}
-
 env:
   RUSTFLAGS: '-Dwarnings'
   CARGO_INCREMENTAL: 0
@@ -44,7 +29,7 @@ jobs:
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: ${{ inputs.msrv }}
+        toolchain: "1.80.0"
 
     - uses: Swatinem/rust-cache@v2
       with:
@@ -117,15 +102,6 @@ jobs:
     - uses: Swatinem/rust-cache@v2
       with:
         key: cargo-cache-${{ hashFiles('Cargo.lock', 'Cargo.toml') }}-${{ matrix.os }}-${{ matrix.rust }}
-
-    - name: Install required packages (Linux)
-      if: ${{ inputs.apt_packages != '' && runner.os == 'Linux' }}
-      shell: bash
-      env:
-        PACKAGES: ${{ inputs.apt_packages }}
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ${PACKAGES}
 
     - name: Check formatting
       shell: bash
