@@ -34,22 +34,43 @@ $ ./results/bin/umami-alerts -c config.toml
 Create a `config.toml` file:
 
 ```toml
+[app]
+debug = false
+dry_run = false
+max_concurrent_jobs = 4
+report_type = "weekly"
+
 [smtp]
 host = "smtp.example.com"
 port = 587
 username = "your-username"
 password = "your-password"
-from = "reports@example.com" # Or with a name: Umami Reports <reports@example.com>
+from = "reports@example.com"
+skip_tls_verify = false
 tls = true
 
 [websites.example]
-id = "website-id"
-name = "Example Website"
+disabled = true
 base_url = "https://analytics.example.com"
+id = "e97f683e-12e8-4fb5-970b-f5171804fe21"
+name = "Example Website"
 username = "your-username"
 password = "your-password"
 recipients = ["user@example.com"]
 timezone = "UTC"
+
+[websites.example-io]
+base_url = "https://umami.example.com"
+id = "e4de62a3-d40a-40da-b900-3ea016893f38"
+name = "example.io"
+username = "umami-user"
+password = "hunter2"
+recipients = [
+    "user2@example.com",
+    "user3@example.com",
+]
+timezone = "Asia/Kolkata"
+
 ```
 
 You may add multiple such websites under `[websites]` as `[websites.new-example]` with the site's configuration.
