@@ -1,26 +1,56 @@
+[app]
+# Enable debug logging.
+debug       = true
+# The number of websites to process at once.
+max_concurrent_jobs = 4
+# The duration for which the report is generated. Can be daily or weekly.
+report_type = "weekly"
+
 [smtp]
-host            = "smtp.example.com"
-port            = 587
-username        = "your-username"
-password        = "your-password"
-from            = "reports@example.com" # Or with a name: Umami Reports <reports@example.com>
+# SMTP Host and Port
+host = "smtp.example.com"
+port = 587
+# The username and password to access the SMTP
+username = "your-username"
+password = "your-password"
+# Sets the From field in the email report. You may add a
+# name here: Umami Reports <reports@example.com>
+from = "reports@example.com"
+# Enable this to skip checks for self-signed certificates
 skip_tls_verify = false
-tls             = true
+# STARTTLS for SMTP.
+tls = true
 
 [websites.example]
-base_url   = "https://analytics.example.com"
-id         = "e97f683e-12e8-4fb5-970b-f5171804fe21"
-name       = "Example Website"
-password   = "your-password"
+# Disable report generation for the website.
+# Remove this or set to false to enable processing this section.
+disabled = true
+base_url = "https://analytics.example.com"
+# The UUID for the website to generate the report for.
+# Can be found under the website settings.
+id = "e97f683e-12e8-4fb5-970b-f5171804fe21"
+# Set this to a sitename, or a URL. Whatever flaots your boat.
+name = "Example Website"
+# Umami does not have the concept of "API Keys". Instead, these keys
+# are generated on each login. So a username and password with access
+# is required here.
+username = "your-username"
+password = "your-password"
+# Email reports are generated and sent per website.
 recipients = ["user@example.com"]
-timezone   = "UTC"
-username   = "your-username"
+# The timezone to be used for the website. This impacts the report data
+# collected by the app.
+timezone = "UTC"
 
+# You may add more websites as such.
 [websites.example-io]
-base_url   = "https://umami.example.com"
-id         = "e4de62a3-d40a-40da-b900-3ea016893f38"
-name       = "example.io"
-password   = "hunter2"
-recipients = ["user2@example.com", "user3@example.com"]
-timezone   = "Asia/Kolkata"
-username   = "umami-user"
+base_url = "https://umami.example.com"
+id = "e4de62a3-d40a-40da-b900-3ea016893f38"
+name = "example.io"
+username = "umami-user"
+password = "hunter2"
+recipients = [
+    "user2@example.com",
+    "user3@example.com",
+]
+timezone = "Asia/Kolkata"
