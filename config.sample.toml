@@ -1,6 +1,9 @@
 [app]
 # Enable debug logging.
-debug       = true
+debug = false
+# Enable dry run option for testing.
+# Enabling this will generate the report but will not send an email.
+dry_run = false
 # The number of websites to process at once.
 max_concurrent_jobs = 4
 # The duration for which the report is generated. Can be daily or weekly.
