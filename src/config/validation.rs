@@ -3,7 +3,10 @@ use crate::error::{AppError, Result};
 use tracing::warn;
 
 #[cfg(test)]
-use {crate::config::models::SmtpConfig, crate::WebsiteConfig};
+use {
+    crate::config::models::{AppConfig, ReportType, SmtpConfig},
+    crate::WebsiteConfig,
+};
 
 pub fn validate_config(config: &Config) -> Result<()> {
     // Validate SMTP configuration
@@ -29,7 +32,7 @@ pub fn validate_config(config: &Config) -> Result<()> {
     }
 
     // Validate max concurrent jobs
-    if config.max_concurrent_jobs == 0 {
+    if config.app.max_concurrent_jobs == 0 {
         return Err(AppError::Config(
             "max_concurrent_jobs must be greater than 0".to_string(),
         ));
@@ -72,8 +75,11 @@ mod tests {
                 );
                 map
             },
-            max_concurrent_jobs: 4,
-            // debug: false,
+            app: AppConfig {
+                debug: false,
+                max_concurrent_jobs: 4,
+                report_type: ReportType::Daily,
+            },
         }
     }
 

@@ -15,7 +15,7 @@ use super::{helpers, models::ReportData};
 use crate::{
     api::client::UmamiClient,
     api::models::MetricValue,
-    config::models::{SmtpConfig, WebsiteConfig},
+    config::models::{ReportType, SmtpConfig, WebsiteConfig},
     error::{AppError, Result},
 };
 
@@ -39,12 +39,13 @@ impl ReportGenerator {
         &self,
         client: &UmamiClient,
         website: &WebsiteConfig,
+        report_type: &ReportType,
         smtp_config: &SmtpConfig,
         token: &str,
     ) -> Result<()> {
         info!("Generating report for website: {}", website.name);
 
-        let time_range = self.calculate_time_range(&website.timezone)?;
+        let time_range = self.calculate_time_range(&website.timezone, report_type)?;
         let report_data = self
             .fetch_report_data(client, website, token, time_range)
             .await?;
@@ -62,29 +63,58 @@ impl ReportGenerator {
         Ok(())
     }
 
-    fn calculate_time_range(&self, timezone: &str) -> Result<TimeRange> {
+    fn calculate_time_range(&self, timezone: &str, report_type: &ReportType) -> Result<TimeRange> {
         let tz: chrono_tz::Tz = timezone.parse().map_err(|e| {
             error!("Invalid timezone {}: {}", timezone, e);
             AppError::Config(format!("Invalid timezone: {}", e))
         })?;
 
         let now = Utc::now().with_timezone(&tz);
-        let yesterday = now - chrono::Duration::days(1);
+        let (start, end);
 
-        let start = tz
-            .with_ymd_and_hms(
-                yesterday.year(),
-                yesterday.month(),
-                yesterday.day(),
-                0,
-                0,
-                0,
-            )
-            .unwrap()
-            .with_timezone(&Utc);
+        if report_type == &ReportType::Daily {
+            let yesterday = now - chrono::Duration::days(1);
+            debug!(
+                "Calculating daily report for {}",
+                yesterday.format("%Y-%m-%d")
+            );
 
-        let end = start + chrono::Duration::days(1) - chrono::Duration::seconds(1);
+            start = tz
+                .with_ymd_and_hms(
+                    yesterday.year(),
+                    yesterday.month(),
+                    yesterday.day(),
+                    0,
+                    0,
+                    0,
+                )
+                .unwrap()
+                .with_timezone(&Utc);
 
+            end = start + chrono::Duration::days(1) - chrono::Duration::seconds(1);
+        } else {
+            let last_week = now - chrono::Duration::weeks(1);
+            debug!(
+                "Calculating weekly report ending {}",
+                last_week.format("%Y-%m-%d")
+            );
+
+            end = tz
+                .with_ymd_and_hms(
+                    last_week.year(),
+                    last_week.month(),
+                    last_week.day(),
+                    23,
+                    59,
+                    59,
+                )
+                .unwrap()
+                .with_timezone(&Utc);
+
+            start = end - chrono::Duration::days(7) + chrono::Duration::seconds(1);
+        }
+
+        debug!("Time range: {} to {}", start, end);
         Ok(TimeRange { start, end })
     }
 

@@ -3,7 +3,7 @@ use futures::stream::{self, StreamExt};
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::Semaphore;
-use tracing::{error, info, Level};
+use tracing::{debug, error, info, Level};
 
 mod api;
 mod config;
@@ -34,15 +34,6 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Initialize logging
-    tracing_subscriber::fmt()
-        .with_max_level(Level::INFO)
-        .with_file(true)
-        .with_line_number(true)
-        .with_thread_ids(true)
-        .with_target(false)
-        .init();
-
     let args = Args::parse();
 
     // Check if config file exists
@@ -53,9 +44,26 @@ async fn main() -> Result<()> {
     let config = Config::load(&args.config).await?;
     validate_config(&config)
         .map_err(|e| AppError::api(format!("Config validation failed: {}", e)))?;
-    let max_concurrent_jobs = config.max_concurrent_jobs;
+    let max_concurrent_jobs = config.app.max_concurrent_jobs;
+
+    let log_level = if config.app.debug {
+        Level::DEBUG
+    } else {
+        Level::INFO
+    };
+
+    // Initialize logging
+    tracing_subscriber::fmt()
+        .with_max_level(log_level)
+        .with_file(true)
+        .with_line_number(true)
+        .with_thread_ids(true)
+        .with_target(false)
+        .init();
 
     info!("Starting umami-alerts");
+    debug!("Debug mode enabled");
+    debug!("Report type: {:?}", config.app.report_type);
 
     config::load_country_map().await?;
     info!("Loaded country mappings");
@@ -135,7 +143,13 @@ async fn process_website(state: &AppState, site_name: &str, website: &WebsiteCon
     // Generate and send report
     state
         .report_generator
-        .generate_and_send(&client, website, &state.config.smtp, &token)
+        .generate_and_send(
+            &client,
+            website,
+            &state.config.app.report_type,
+            &state.config.smtp,
+            &token,
+        )
         .await?;
 
     Ok(())

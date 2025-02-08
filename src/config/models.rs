@@ -10,12 +10,43 @@ use crate::error::{AppError, Result};
 pub struct Config {
     pub smtp: SmtpConfig,
     pub websites: HashMap<String, WebsiteConfig>,
+    #[serde(default)]
+    pub app: AppConfig,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct AppConfig {
+    #[serde(default)]
+    pub debug: bool,
     #[serde(default = "default_max_concurrent_jobs")]
     pub max_concurrent_jobs: usize,
+    #[serde(default = "default_report_type")]
+    pub report_type: ReportType,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum ReportType {
+    Daily,
+    Weekly,
 }
 
 fn default_max_concurrent_jobs() -> usize {
     4
+}
+
+fn default_report_type() -> ReportType {
+    ReportType::Daily
+}
+
+impl Default for AppConfig {
+    fn default() -> Self {
+        Self {
+            debug: false,
+            max_concurrent_jobs: default_max_concurrent_jobs(),
+            report_type: default_report_type(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
