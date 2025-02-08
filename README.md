@@ -1,6 +1,6 @@
 <h1 align="center">umami-alerts</h1>
 
-A fast, efficient daily analytics report generator for [Umami Analytics](https://umami.is/). This tool fetches your analytics data and sends a simple, detailed email reports including:
+A fast, efficient daily analytics report generator for [Umami Analytics](https://umami.is/). This tool fetches your analytics data and sends simple, detailed email reports including:
 
 - Pageviews and visitor statistics
 - Engagement metrics (bounce rates, time spent)
