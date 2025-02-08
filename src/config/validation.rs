@@ -77,6 +77,7 @@ mod tests {
             },
             app: AppConfig {
                 debug: false,
+                dry_run: false,
                 max_concurrent_jobs: 4,
                 report_type: ReportType::Daily,
             },

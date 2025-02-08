@@ -145,6 +145,7 @@ async fn process_website(state: &AppState, site_name: &str, website: &WebsiteCon
         .report_generator
         .generate_and_send(
             &client,
+            &state.config.app.dry_run,
             website,
             &state.config.app.report_type,
             &state.config.smtp,

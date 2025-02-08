@@ -38,6 +38,7 @@ impl ReportGenerator {
     pub async fn generate_and_send(
         &self,
         client: &UmamiClient,
+        dry_run: &bool,
         website: &WebsiteConfig,
         report_type: &ReportType,
         smtp_config: &SmtpConfig,
@@ -51,13 +52,17 @@ impl ReportGenerator {
             .await?;
         let html = self.render_report(&report_data)?;
 
-        self.send_email(
-            smtp_config,
-            &website.recipients,
-            &format!("Analytics Report - {} - {}", website.name, report_data.date),
-            &html,
-        )
-        .await?;
+        if *dry_run {
+            info!("Dry run enabled, will not send an email");
+        } else {
+            self.send_email(
+                smtp_config,
+                &website.recipients,
+                &format!("Analytics Report - {} - {}", website.name, report_data.date),
+                &html,
+            )
+            .await?;
+        }
 
         info!("Successfully sent report for website: {}", website.name);
         Ok(())

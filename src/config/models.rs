@@ -18,6 +18,8 @@ pub struct Config {
 pub struct AppConfig {
     #[serde(default)]
     pub debug: bool,
+    #[serde(default)]
+    pub dry_run: bool,
     #[serde(default = "default_max_concurrent_jobs")]
     pub max_concurrent_jobs: usize,
     #[serde(default = "default_report_type")]
@@ -43,6 +45,7 @@ impl Default for AppConfig {
     fn default() -> Self {
         Self {
             debug: false,
+            dry_run: false,
             max_concurrent_jobs: default_max_concurrent_jobs(),
             report_type: default_report_type(),
         }
