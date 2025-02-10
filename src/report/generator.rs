@@ -98,17 +98,19 @@ impl ReportGenerator {
 
             end = start + chrono::Duration::days(1) - chrono::Duration::seconds(1);
         } else {
-            let last_week = now - chrono::Duration::weeks(1);
+            // Generate report for time ending yesterday
+            let yesterday = now - chrono::Duration::days(1);
             debug!(
-                "Calculating weekly report ending {}",
-                last_week.format("%Y-%m-%d")
+                "Calculating weekly report ending: {}",
+                yesterday.format("%Y-%m-%d")
             );
 
+            // Set end time to yesterday 23:59:59
             end = tz
                 .with_ymd_and_hms(
-                    last_week.year(),
-                    last_week.month(),
-                    last_week.day(),
+                    yesterday.year(),
+                    yesterday.month(),
+                    yesterday.day(),
                     23,
                     59,
                     59,
@@ -116,6 +118,7 @@ impl ReportGenerator {
                 .unwrap()
                 .with_timezone(&Utc);
 
+            // Start time is 7 days before end time (previous Sunday 00:00:00)
             start = end - chrono::Duration::days(7) + chrono::Duration::seconds(1);
         }
 
