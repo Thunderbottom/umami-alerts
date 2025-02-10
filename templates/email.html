@@ -171,7 +171,7 @@
                         {{#if (gt stats.pageviews.value stats.pageviews.prev)}}
                             <div class="trend positive">↑ {{formatNumber (sub stats.pageviews.value stats.pageviews.prev)}} views</div>
                         {{else}}
-                            <div class="trend negative">↓ {{formatNumber (sub stats.pageviews.prev stats.pageviews.value)}}</div>
+                            <div class="trend negative">↓ {{formatNumber (sub stats.pageviews.prev stats.pageviews.value)}} views</div>
                         {{/if}}
                     </div>
                 </td>
@@ -180,9 +180,9 @@
                     <div class="stat-value">{{formatNumber stats.visitors.value}}</div>
                     <div class="trend-wrapper">
                         {{#if (gt stats.visitors.value stats.visitors.prev)}}
-                            <div class="trend positive">↑ {{formatNumber (sub stats.visitors.value stats.visitors.prev)}}</div>
+                            <div class="trend positive">↑ {{formatNumber (sub stats.visitors.value stats.visitors.prev)}} visitors</div>
                         {{else}}
-                            <div class="trend negative">↓ {{formatNumber (sub stats.visitors.prev stats.visitors.value)}}</div>
+                            <div class="trend negative">↓ {{formatNumber (sub stats.visitors.prev stats.visitors.value)}} visitors</div>
                         {{/if}}
                     </div>
                 </td>
