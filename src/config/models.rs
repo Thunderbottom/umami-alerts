@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fmt;
 use std::path::Path;
 use tokio::fs;
 use url::Url;
@@ -31,6 +32,15 @@ pub struct AppConfig {
 pub enum ReportType {
     Daily,
     Weekly,
+}
+
+impl fmt::Display for ReportType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ReportType::Daily => write!(f, "Daily"),
+            ReportType::Weekly => write!(f, "Weekly"),
+        }
+    }
 }
 
 fn default_max_concurrent_jobs() -> usize {

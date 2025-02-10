@@ -48,7 +48,7 @@ impl ReportGenerator {
 
         let time_range = self.calculate_time_range(&website.timezone, report_type)?;
         let report_data = self
-            .fetch_report_data(client, website, token, time_range)
+            .fetch_report_data(client, website, token, time_range, report_type)
             .await?;
         let html = self.render_report(&report_data)?;
 
@@ -58,7 +58,12 @@ impl ReportGenerator {
             self.send_email(
                 smtp_config,
                 &website.recipients,
-                &format!("Analytics Report - {} - {}", website.name, report_data.date),
+                &format!(
+                    "{} Analytics Report - {} - {}",
+                    report_type.to_string(),
+                    website.name,
+                    report_data.date
+                ),
                 &html,
             )
             .await?;
@@ -132,6 +137,7 @@ impl ReportGenerator {
         website: &WebsiteConfig,
         token: &str,
         time_range: TimeRange,
+        report_type: &ReportType,
     ) -> Result<ReportData> {
         debug!(
             "Fetching metrics for time range: {} to {}",
@@ -183,6 +189,7 @@ impl ReportGenerator {
         Ok(ReportData {
             website_name: website.name.clone(),
             date: time_range.end.format("%B %d, %Y").to_string(),
+            report_type: report_type.to_string(),
             stats,
             bounce_rate,
             time_spent,

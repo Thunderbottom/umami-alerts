@@ -158,7 +158,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>{{website_name}} - Analytics Report</h1>
+            <h1>{{website_name}} - {{report_type}} Analytics Report</h1>
             <p>{{date}}</p>
         </div>
 
@@ -169,7 +169,7 @@
                     <div class="stat-value">{{formatNumber stats.pageviews.value}}</div>
                     <div class="trend-wrapper">
                         {{#if (gt stats.pageviews.value stats.pageviews.prev)}}
-                            <div class="trend positive">↑ {{formatNumber (sub stats.pageviews.value stats.pageviews.prev)}} views vs yesterday</div>
+                            <div class="trend positive">↑ {{formatNumber (sub stats.pageviews.value stats.pageviews.prev)}} views</div>
                         {{else}}
                             <div class="trend negative">↓ {{formatNumber (sub stats.pageviews.prev stats.pageviews.value)}}</div>
                         {{/if}}

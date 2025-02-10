@@ -5,6 +5,7 @@ use serde::Serialize;
 pub struct ReportData {
     pub website_name: String,
     pub date: String,
+    pub report_type: String,
     pub stats: Stats,
     pub bounce_rate: MetricValue,
     pub time_spent: String,
