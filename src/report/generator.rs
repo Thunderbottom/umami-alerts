@@ -60,7 +60,7 @@ impl ReportGenerator {
                 &website.recipients,
                 &format!(
                     "{} Analytics Report - {} - {}",
-                    report_type.to_string(),
+                    report_type,
                     website.name,
                     report_data.date
                 ),
