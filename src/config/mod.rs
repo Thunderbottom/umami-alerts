@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::sync::OnceLock;
+use tracing::debug;
 
 pub mod models;
 pub mod validation;
@@ -24,9 +25,16 @@ pub async fn load_country_map() -> Result<(), crate::error::AppError> {
 }
 
 pub fn get_country_name(code: &str) -> String {
+    if code.trim() == "(Unknown)" || code.is_empty() {
+        return "Unknown".to_string();
+    }
+
     COUNTRY_MAP
         .get()
         .and_then(|map| map.get(code))
         .map(|name| name.to_string())
-        .unwrap_or_else(|| code.to_string())
+        .unwrap_or_else(|| {
+            debug!("Unknown country code: '{}'", code);
+            code.to_string()
+        })
 }

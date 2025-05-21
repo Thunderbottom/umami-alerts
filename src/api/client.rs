@@ -126,6 +126,7 @@ impl UmamiClient {
 
         if metric_type == "country" {
             for metric in &mut metrics {
+                debug!("Processing country code: '{}'", metric.x);
                 metric.x = crate::config::get_country_name(&metric.x);
             }
         }
