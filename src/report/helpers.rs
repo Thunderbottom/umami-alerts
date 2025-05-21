@@ -39,9 +39,9 @@ pub fn format_time_spent(total_time: f64, visits: f64) -> String {
     let remaining_seconds = (seconds % 60.0) as i64;
 
     if minutes > 0 {
-        format!("{}m {}s", minutes, remaining_seconds)
+        format!("{minutes}m {remaining_seconds}s")
     } else {
-        format!("{}s", remaining_seconds)
+        format!("{remaining_seconds}s")
     }
 }
 
@@ -62,7 +62,7 @@ pub fn percentage(
         0.0
     };
 
-    out.write(&format!("{:.1}", percentage))?;
+    out.write(&format!("{percentage:.1}"))?;
     Ok(())
 }
 
@@ -89,7 +89,7 @@ pub fn format_float(
 
     let decimals = h.param(1).and_then(|v| v.value().as_u64()).unwrap_or(2) as usize;
 
-    out.write(&format!("{:.*}", decimals, number))?;
+    out.write(&format!("{number:.decimals$}"))?;
     Ok(())
 }
 

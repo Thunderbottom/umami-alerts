@@ -182,8 +182,7 @@ impl WebsiteConfig {
         for recipient in &self.recipients {
             if !recipient.contains('@') {
                 return Err(AppError::Config(format!(
-                    "Invalid email address: {}",
-                    recipient
+                    "Invalid email address: {recipient}"
                 )));
             }
         }

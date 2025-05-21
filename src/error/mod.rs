@@ -43,18 +43,18 @@ impl StdError for AppError {
 impl fmt::Display for AppError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Io(e) => write!(f, "IO error: {}", e),
-            Self::Config(msg) => write!(f, "Configuration error: {}", msg),
-            Self::Api(msg) => write!(f, "API error: {}", msg),
-            Self::Template(msg) => write!(f, "Template error: {}", msg),
-            Self::Smtp(msg) => write!(f, "SMTP error: {}", msg),
-            Self::Json(e) => write!(f, "JSON error: {}", e),
-            Self::Toml(e) => write!(f, "TOML error: {}", e),
-            Self::Request(e) => write!(f, "Request error: {}", e),
-            Self::Email(msg) => write!(f, "Email error: {}", msg),
-            Self::Handlebars(e) => write!(f, "Handlebars error: {}", e),
-            Self::Url(e) => write!(f, "URL parsing error: {}", e),
-            Self::Task(msg) => write!(f, "Task error: {}", msg),
+            Self::Io(e) => write!(f, "IO error: {e}"),
+            Self::Config(msg) => write!(f, "Configuration error: {msg}"),
+            Self::Api(msg) => write!(f, "API error: {msg}"),
+            Self::Template(msg) => write!(f, "Template error: {msg}"),
+            Self::Smtp(msg) => write!(f, "SMTP error: {msg}"),
+            Self::Json(e) => write!(f, "JSON error: {e}"),
+            Self::Toml(e) => write!(f, "TOML error: {e}"),
+            Self::Request(e) => write!(f, "Request error: {e}"),
+            Self::Email(msg) => write!(f, "Email error: {msg}"),
+            Self::Handlebars(e) => write!(f, "Handlebars error: {e}"),
+            Self::Url(e) => write!(f, "URL parsing error: {e}"),
+            Self::Task(msg) => write!(f, "Task error: {msg}"),
         }
     }
 }

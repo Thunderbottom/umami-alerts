@@ -18,7 +18,7 @@ impl UmamiClient {
         let client = Client::builder()
             .timeout(API_TIMEOUT)
             .build()
-            .map_err(|e| AppError::api(format!("Failed to create HTTP client: {}", e)))?;
+            .map_err(|e| AppError::api(format!("Failed to create HTTP client: {e}")))?;
 
         // Ensure base_url doesn't end with a slash
         let base_url = base_url.trim_end_matches('/').to_string();
@@ -39,12 +39,12 @@ impl UmamiClient {
             }))
             .send()
             .await
-            .map_err(|e| AppError::api(format!("Authentication request failed: {}", e)))?;
+            .map_err(|e| AppError::api(format!("Authentication request failed: {e}")))?;
 
         match response.status() {
             StatusCode::OK => {
                 let auth = response.json::<AuthResponse>().await.map_err(|e| {
-                    AppError::api(format!("Failed to parse authentication response: {}", e))
+                    AppError::api(format!("Failed to parse authentication response: {e}"))
                 })?;
                 Ok(auth.token)
             }
@@ -53,10 +53,9 @@ impl UmamiClient {
                     .text()
                     .await
                     .unwrap_or_else(|_| "Unknown error".to_string());
-                error!("Authentication failed with status {}: {}", status, error);
+                error!("Authentication failed with status {status}: {error}");
                 Err(AppError::api(format!(
-                    "Authentication failed ({}): {}",
-                    status, error
+                    "Authentication failed ({status}): {error}"
                 )))
             }
         }
@@ -85,7 +84,7 @@ impl UmamiClient {
             .bearer_auth(token)
             .send()
             .await
-            .map_err(|e| AppError::api(format!("Failed to fetch stats: {}", e)))?;
+            .map_err(|e| AppError::api(format!("Failed to fetch stats: {e}")))?;
 
         self.handle_response(response).await
     }
@@ -120,7 +119,7 @@ impl UmamiClient {
             .bearer_auth(token)
             .send()
             .await
-            .map_err(|e| AppError::api(format!("Failed to fetch metrics: {}", e)))?;
+            .map_err(|e| AppError::api(format!("Failed to fetch metrics: {e}")))?;
 
         let mut metrics: Vec<Metric> = self.handle_response(response).await?;
 
@@ -142,7 +141,7 @@ impl UmamiClient {
             StatusCode::OK => response
                 .json::<T>()
                 .await
-                .map_err(|e| AppError::api(format!("Failed to parse API response: {}", e))),
+                .map_err(|e| AppError::api(format!("Failed to parse API response: {e}"))),
             StatusCode::UNAUTHORIZED => {
                 error!("API authentication failed");
                 Err(AppError::api("Authentication token expired or invalid"))
@@ -162,8 +161,7 @@ impl UmamiClient {
                     .unwrap_or_else(|_| "Unknown error".to_string());
                 error!("API request failed with status {}: {}", status, error);
                 Err(AppError::api(format!(
-                    "API request failed ({}): {}",
-                    status, error
+                    "API request failed ({status}): {error}"
                 )))
             }
         }

@@ -74,7 +74,7 @@ impl ReportGenerator {
     fn calculate_time_range(&self, timezone: &str, report_type: &ReportType) -> Result<TimeRange> {
         let tz: chrono_tz::Tz = timezone.parse().map_err(|e| {
             error!("Invalid timezone {}: {}", timezone, e);
-            AppError::Config(format!("Invalid timezone: {}", e))
+            AppError::Config(format!("Invalid timezone: {e}"))
         })?;
 
         let now = Utc::now().with_timezone(&tz);
@@ -204,7 +204,7 @@ impl ReportGenerator {
 
         self.template.render("email", &data).map_err(|e| {
             error!("Failed to render template: {}", e);
-            AppError::Template(format!("Failed to render report: {}", e))
+            AppError::Template(format!("Failed to render report: {e}"))
         })
     }
 
@@ -249,8 +249,7 @@ impl ReportGenerator {
                 Err(e) => {
                     error!("Failed to send email to {}: {}", recipient, e);
                     return Err(AppError::Smtp(format!(
-                        "Failed to send email to {}: {}",
-                        recipient, e
+                        "Failed to send email to {recipient}: {e}"
                     )));
                 }
             }

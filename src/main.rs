@@ -43,7 +43,7 @@ async fn main() -> Result<()> {
     // Load configuration
     let config = Config::load(&args.config).await?;
     validate_config(&config)
-        .map_err(|e| AppError::api(format!("Config validation failed: {}", e)))?;
+        .map_err(|e| AppError::api(format!("Config validation failed: {e}")))?;
     let max_concurrent_jobs = config.app.max_concurrent_jobs;
 
     let log_level = if config.app.debug {
