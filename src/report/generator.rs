@@ -150,22 +150,22 @@ impl ReportGenerator {
             .await?;
 
         let bounce_rate = MetricValue {
-            value: if stats.visits.value > 0.0 {
-                (stats.bounces.value / stats.visits.value * 100.0).min(100.0)
+            value: if stats.visits > 0.0 {
+                (stats.bounces / stats.visits * 100.0).min(100.0)
             } else {
                 0.0
             },
-            prev: if stats.visits.prev > 0.0 {
-                (stats.bounces.prev / stats.visits.prev * 100.0).min(100.0)
+            prev: if stats.comparison.visits > 0.0 {
+                (stats.comparison.bounces / stats.comparison.visits * 100.0).min(100.0)
             } else {
                 0.0
             },
         };
 
-        let time_spent = helpers::format_time_spent(stats.total_time.value, stats.visits.value);
+        let time_spent = helpers::format_time_spent(stats.totaltime, stats.visits);
 
         let pages = client
-            .get_metrics(token, &website.id, "url", start_at, end_at, 10)
+            .get_metrics(token, &website.id, "path", start_at, end_at, 10)
             .await?;
 
         let countries = client

@@ -2,12 +2,21 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Stats {
-    pub pageviews: MetricValue,
-    pub visitors: MetricValue,
-    pub visits: MetricValue,
-    pub bounces: MetricValue,
-    #[serde(rename = "totaltime")]
-    pub total_time: MetricValue,
+    pub pageviews: f64,
+    pub visitors: f64,
+    pub visits: f64,
+    pub bounces: f64,
+    pub totaltime: f64,
+    pub comparison: StatsComparison,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct StatsComparison {
+    pub pageviews: f64,
+    pub visitors: f64,
+    pub visits: f64,
+    pub bounces: f64,
+    pub totaltime: f64,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

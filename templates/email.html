@@ -166,23 +166,23 @@
             <tr>
                 <td class="stat-box">
                     <div class="stat-label">Pageviews</div>
-                    <div class="stat-value">{{formatNumber stats.pageviews.value}}</div>
+                    <div class="stat-value">{{formatNumber stats.pageviews}}</div>
                     <div class="trend-wrapper">
-                        {{#if (gt stats.pageviews.value stats.pageviews.prev)}}
-                            <div class="trend positive">↑ {{formatNumber (sub stats.pageviews.value stats.pageviews.prev)}} views</div>
+                        {{#if (gt stats.pageviews stats.comparison.pageviews)}}
+                            <div class="trend positive">↑ {{formatNumber (sub stats.pageviews stats.comparison.pageviews)}} views</div>
                         {{else}}
-                            <div class="trend negative">↓ {{formatNumber (sub stats.pageviews.prev stats.pageviews.value)}} views</div>
+                            <div class="trend negative">↓ {{formatNumber (sub stats.comparison.pageviews stats.pageviews)}} views</div>
                         {{/if}}
                     </div>
                 </td>
                 <td class="stat-box">
                     <div class="stat-label">Unique Visitors</div>
-                    <div class="stat-value">{{formatNumber stats.visitors.value}}</div>
+                    <div class="stat-value">{{formatNumber stats.visitors}}</div>
                     <div class="trend-wrapper">
-                        {{#if (gt stats.visitors.value stats.visitors.prev)}}
-                            <div class="trend positive">↑ {{formatNumber (sub stats.visitors.value stats.visitors.prev)}} visitors</div>
+                        {{#if (gt stats.visitors stats.comparison.visitors)}}
+                            <div class="trend positive">↑ {{formatNumber (sub stats.visitors stats.comparison.visitors)}} visitors</div>
                         {{else}}
-                            <div class="trend negative">↓ {{formatNumber (sub stats.visitors.prev stats.visitors.value)}} visitors</div>
+                            <div class="trend negative">↓ {{formatNumber (sub stats.comparison.visitors stats.visitors)}} visitors</div>
                         {{/if}}
                     </div>
                 </td>
