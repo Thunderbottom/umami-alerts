@@ -18,7 +18,7 @@ jobs:
         - target: x86_64-apple-darwin
           archive: zip
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
     - name: Build and release
       uses: rust-build/rust-build.action@v1.4.5
       with:
