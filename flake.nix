@@ -36,7 +36,7 @@
           inherit buildInputs nativeBuildInputs;
 
           packages = with pkgs; [
-            (pkgs.rust-bin.beta.latest.default.override {
+            (pkgs.rust-bin.stable.latest.default.override {
               extensions = [ "rust-src" ];
             })
             rust-analyzer
@@ -44,7 +44,7 @@
           ];
 
           RUST_SRC_PATH = "${
-            pkgs.rust-bin.beta.latest.default.override {
+            pkgs.rust-bin.stable.latest.default.override {
               extensions = [ "rust-src" ];
             }
           }/lib/rustlib/src/rust/library";
