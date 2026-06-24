@@ -6,7 +6,8 @@ debug = false
 dry_run = false
 # The number of websites to process at once.
 max_concurrent_jobs = 4
-# The duration for which the report is generated. Can be daily or weekly.
+# The duration for which the report is generated. Can be daily, weekly, or monthly.
+# monthly covers the previous calendar month.
 report_type = "weekly"
 
 [smtp]

@@ -23,6 +23,7 @@ use crate::{
 struct TimeRange {
     start: DateTime<Utc>,
     end: DateTime<Utc>,
+    label: String,
 }
 
 #[derive(Clone)]
@@ -78,55 +79,89 @@ impl ReportGenerator {
         })?;
 
         let now = Utc::now().with_timezone(&tz);
-        let (start, end);
+        let yesterday = now - chrono::Duration::days(1);
 
-        if report_type == &ReportType::Daily {
-            let yesterday = now - chrono::Duration::days(1);
-            debug!(
-                "Calculating daily report for {}",
-                yesterday.format("%Y-%m-%d")
-            );
-
-            start = tz
-                .with_ymd_and_hms(
-                    yesterday.year(),
-                    yesterday.month(),
-                    yesterday.day(),
-                    0,
-                    0,
-                    0,
+        let (start, end, label) = match report_type {
+            ReportType::Daily => {
+                debug!(
+                    "Calculating daily report for {}",
+                    yesterday.format("%Y-%m-%d")
+                );
+                let start_local = tz
+                    .with_ymd_and_hms(
+                        yesterday.year(),
+                        yesterday.month(),
+                        yesterday.day(),
+                        0,
+                        0,
+                        0,
+                    )
+                    .unwrap();
+                let end_local =
+                    start_local + chrono::Duration::days(1) - chrono::Duration::seconds(1);
+                let label = yesterday.format("%B %d, %Y").to_string();
+                (
+                    start_local.with_timezone(&Utc),
+                    end_local.with_timezone(&Utc),
+                    label,
                 )
-                .unwrap()
-                .with_timezone(&Utc);
-
-            end = start + chrono::Duration::days(1) - chrono::Duration::seconds(1);
-        } else {
-            // Generate report for time ending yesterday
-            let yesterday = now - chrono::Duration::days(1);
-            debug!(
-                "Calculating weekly report ending: {}",
-                yesterday.format("%Y-%m-%d")
-            );
-
-            // Set end time to yesterday 23:59:59
-            end = tz
-                .with_ymd_and_hms(
-                    yesterday.year(),
-                    yesterday.month(),
-                    yesterday.day(),
-                    23,
-                    59,
-                    59,
+            }
+            ReportType::Weekly => {
+                debug!(
+                    "Calculating weekly report ending: {}",
+                    yesterday.format("%Y-%m-%d")
+                );
+                let end_local = tz
+                    .with_ymd_and_hms(
+                        yesterday.year(),
+                        yesterday.month(),
+                        yesterday.day(),
+                        23,
+                        59,
+                        59,
+                    )
+                    .unwrap();
+                let start_local =
+                    end_local - chrono::Duration::days(7) + chrono::Duration::seconds(1);
+                let label = format!(
+                    "{} \u{2013} {}",
+                    start_local.format("%B %d"),
+                    end_local.format("%B %d, %Y")
+                );
+                (
+                    start_local.with_timezone(&Utc),
+                    end_local.with_timezone(&Utc),
+                    label,
                 )
-                .unwrap()
-                .with_timezone(&Utc);
-
-            // Start time is 7 days before end time (previous Sunday 00:00:00)
-            start = end - chrono::Duration::days(7) + chrono::Duration::seconds(1);
-        }
+            }
+            ReportType::Monthly => {
+                // Previous calendar month: first day 00:00:00 through last day 23:59:59
+                let first_of_this_month = tz
+                    .with_ymd_and_hms(now.year(), now.month(), 1, 0, 0, 0)
+                    .unwrap();
+                let last_of_prev_month = first_of_this_month - chrono::Duration::seconds(1);
+                let first_of_prev_month = tz
+                    .with_ymd_and_hms(
+                        last_of_prev_month.year(),
+                        last_of_prev_month.month(),
+                        1,
+                        0,
+                        0,
+                        0,
+                    )
+                    .unwrap();
+                let label = last_of_prev_month.format("%B %Y").to_string();
+                debug!("Calculating monthly report for {}", label);
+                (
+                    first_of_prev_month.with_timezone(&Utc),
+                    last_of_prev_month.with_timezone(&Utc),
+                    label,
+                )
+            }
+        };
 
         debug!("Time range: {} to {}", start, end);
-        Ok(TimeRange { start, end })
+        Ok(TimeRange { start, end, label })
     }
 
     async fn fetch_report_data(
@@ -145,9 +180,14 @@ impl ReportGenerator {
         let start_at = time_range.start.timestamp_millis();
         let end_at = time_range.end.timestamp_millis();
 
-        let stats = client
-            .get_stats(token, &website.id, start_at, end_at)
-            .await?;
+        let (stats, pages, countries, browsers, devices, referrers) = tokio::try_join!(
+            client.get_stats(token, &website.id, start_at, end_at),
+            client.get_metrics(token, &website.id, "path", start_at, end_at, 10),
+            client.get_metrics(token, &website.id, "country", start_at, end_at, 10),
+            client.get_metrics(token, &website.id, "browser", start_at, end_at, 5),
+            client.get_metrics(token, &website.id, "device", start_at, end_at, 5),
+            client.get_metrics(token, &website.id, "referrer", start_at, end_at, 5),
+        )?;
 
         let bounce_rate = MetricValue {
             value: if stats.visits > 0.0 {
@@ -164,29 +204,9 @@ impl ReportGenerator {
 
         let time_spent = helpers::format_time_spent(stats.totaltime, stats.visits);
 
-        let pages = client
-            .get_metrics(token, &website.id, "path", start_at, end_at, 10)
-            .await?;
-
-        let countries = client
-            .get_metrics(token, &website.id, "country", start_at, end_at, 10)
-            .await?;
-
-        let browsers = client
-            .get_metrics(token, &website.id, "browser", start_at, end_at, 5)
-            .await?;
-
-        let devices = client
-            .get_metrics(token, &website.id, "device", start_at, end_at, 5)
-            .await?;
-
-        let referrers = client
-            .get_metrics(token, &website.id, "referrer", start_at, end_at, 5)
-            .await?;
-
         Ok(ReportData {
             website_name: website.name.clone(),
-            date: time_range.end.format("%B %d, %Y").to_string(),
+            date: time_range.label,
             report_type: report_type.to_string(),
             stats,
             bounce_rate,
@@ -220,7 +240,14 @@ impl ReportGenerator {
         let creds = Credentials::new(config.username.clone(), config.password.clone());
 
         let tls_parameters = if config.tls {
-            Tls::Required(TlsParameters::new(config.host.clone())?)
+            let tls_params = if config.skip_tls_verify {
+                TlsParameters::builder(config.host.clone())
+                    .dangerous_accept_invalid_certs(true)
+                    .build()?
+            } else {
+                TlsParameters::new(config.host.clone())?
+            };
+            Tls::Required(tls_params)
         } else {
             Tls::None
         };
@@ -229,11 +256,14 @@ impl ReportGenerator {
             .credentials(creds)
             .port(config.port)
             .tls(tls_parameters)
+            .timeout(Some(std::time::Duration::from_secs(config.timeout_seconds)))
             .build();
+
+        let from_address: lettre::message::Mailbox = config.from.parse()?;
 
         for recipient in recipients {
             let email = Message::builder()
-                .from(config.from.parse()?)
+                .from(from_address.clone())
                 .to(recipient.parse()?)
                 .subject(subject)
                 .multipart(

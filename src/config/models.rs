@@ -32,6 +32,7 @@ pub struct AppConfig {
 pub enum ReportType {
     Daily,
     Weekly,
+    Monthly,
 }
 
 impl fmt::Display for ReportType {
@@ -39,6 +40,7 @@ impl fmt::Display for ReportType {
         match self {
             ReportType::Daily => write!(f, "Daily"),
             ReportType::Weekly => write!(f, "Weekly"),
+            ReportType::Monthly => write!(f, "Monthly"),
         }
     }
 }
@@ -74,7 +76,7 @@ pub struct SmtpConfig {
     #[serde(default = "default_timeout")]
     pub timeout_seconds: u64,
     #[serde(default)]
-    pub skip_verify: bool,
+    pub skip_tls_verify: bool,
 }
 
 fn default_timeout() -> u64 {

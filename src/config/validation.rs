@@ -56,7 +56,7 @@ mod tests {
                 from: "test@example.com".to_string(),
                 tls: true,
                 timeout_seconds: 30,
-                skip_verify: false,
+                skip_tls_verify: false,
             },
             websites: {
                 let mut map = HashMap::new();

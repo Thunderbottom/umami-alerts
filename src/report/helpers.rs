@@ -24,8 +24,25 @@ pub fn format_number(
         ))
     })?;
 
-    out.write(&format!("{}", number as i64))?;
+    out.write(&with_commas(number as i64))?;
     Ok(())
+}
+
+fn with_commas(n: i64) -> String {
+    let digits = n.unsigned_abs().to_string();
+    let separated = digits
+        .as_bytes()
+        .rchunks(3)
+        .rev()
+        .map(std::str::from_utf8)
+        .collect::<Result<Vec<_>, _>>()
+        .unwrap()
+        .join(",");
+    if n < 0 {
+        format!("-{separated}")
+    } else {
+        separated
+    }
 }
 
 /// Calculate and format time spent per visit
@@ -115,7 +132,7 @@ mod tests {
         // Test formatNumber
         let template = "{{formatNumber number}}";
         let mut data = serde_json::json!({"number": 1234.56});
-        assert_eq!(handlebars.render_template(template, &data).unwrap(), "1234");
+        assert_eq!(handlebars.render_template(template, &data).unwrap(), "1,234");
 
         // Test percentage
         let template = "{{percentage value total}}";

@@ -4,7 +4,7 @@ version = "0.1.1"
 authors = ["Chinmay D. Pai <chinmaydpai@gmail.com>"]
 edition = "2021"
 license = "MIT"
-description = "Daily reports generator for Umami Analytics"
+description = "Automated analytics reports generator for Umami Analytics"
 keywords = ["reports", "analytics", "email"]
 repository = "https://github.com/Thunderbottom/umami-alerts"
 homepage = "https://github.com/Thunderbottom/umami-alerts"
@@ -14,18 +14,19 @@ publish = false
 
 [dependencies]
 tokio = { version = "1.43", features = ["full"] }
-reqwest = { version = "0.12.12", features = ["json", "rustls-tls"], default-features = false }
-serde = { version = "1.0.217", features = ["derive"] }
-serde_json = "1.0.138"
-toml = "0.8.20"
-thiserror = "2.0.11"
-chrono = { version = "0.4.39", features = ["serde"] }
-chrono-tz = "0.10.1"
-handlebars = { version = "6.3.0", features = ["dir_source"] }
-lettre = { version = "0.11.12", features = ["smtp-transport", "tokio1-rustls-tls", "builder"], default-features = false }
-tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-futures = "0.3.31"
-url = "2.5.4"
-mockito = "1.6.1"
-clap = { version = "4.5.28", features = ["derive"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = "0.10"
+handlebars = { version = "6.3", features = ["dir_source"] }
+lettre = { version = "0.11", features = ["smtp-transport", "tokio1-rustls-tls", "builder"], default-features = false }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+futures = "0.3"
+url = "2.5"
+clap = { version = "4.5", features = ["derive"] }
+
+[dev-dependencies]
+mockito = "1.6"
