@@ -132,7 +132,10 @@ mod tests {
         // Test formatNumber
         let template = "{{formatNumber number}}";
         let mut data = serde_json::json!({"number": 1234.56});
-        assert_eq!(handlebars.render_template(template, &data).unwrap(), "1,234");
+        assert_eq!(
+            handlebars.render_template(template, &data).unwrap(),
+            "1,234"
+        );
 
         // Test percentage
         let template = "{{percentage value total}}";
